@@ -65,4 +65,3 @@ async def delete_book(book_id: str,session:AsyncSession = Depends(get_session)):
     else:
 
         raise HTTPException(status_code=404, detail="Book not found")
-    
