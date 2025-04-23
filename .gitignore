@@ -1,0 +1,55 @@
+# Python-related files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+.env.*
+
+# Virtual Environment
+venv/
+env/
+
+
+# IDE and Editor Configurations
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Logs and Cache
+*.log
+*.sqlite3
+db.sqlite3
+.cache/
+*.pytest_cache/
+build/
+dist/
+
+# Temporary Files
+*.bak
+*.swp
+*.tmp
+*.orig
+
+# Docker-related files
+*.dockerfile
+docker-compose.override.yml
+
+# Coverage and Test Reports
+.coverage
+htmlcov/
+junit.xml
+nosetests.xml
+coverage.xml
+*.egg-info/
+
+# Specific frameworks/tools
+migrations/  # If using Alembic for DB migrations
+
+# Node.js (If front-end is bundled with FastAPI)
+node_modules/
+package-lock.json
+
+# Others
+.DS_Store
+Thumbs.db
