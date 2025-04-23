@@ -8,6 +8,7 @@ from sqlmodel import Column, Field, SQLModel
 class User (SQLModel, table = true):
     __tablename__ = "users"
 
+
     uid:uuid.UUID
     username:str
     firstName:str
