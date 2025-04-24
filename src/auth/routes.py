@@ -39,13 +39,7 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
     if user:
        pass_hash  = verify_pass(login_data.password, user.password_hash)
        if pass_hash:
-        print(" .. . ... ")
-        print(" .. . ... ")
-        print(user)
-        print(" .. . ... ")
-        print(" .. . ... ")
-        print(" .. . ... ")
-        print(" .. . ... ")
+        
         access_token = create_token(
            user_data={
               'email':user.email,

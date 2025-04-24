@@ -10,15 +10,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.books.service import BookService
 from src.db.main import get_session
-
+from src.auth.dependencies import AccessTokenBearer
 
 book_router = APIRouter()
 books_service = BookService()
+auth_bearer_token = AccessTokenBearer()
 
 
 @book_router.get("/", response_model=List[Book])
 async def get_all_books(
     session: AsyncSession = Depends(get_session),
+    user_details = Depends(auth_bearer_token)
     
 ):
     books = await books_service.get_all(session)
@@ -41,6 +43,12 @@ async def read_book(book_id: str,session:AsyncSession = Depends(get_session)):
 async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session)):
     print("HEEEEEE")
     new_book = await books_service.create_book(book, session)
+    print(" . ..  . ... .")
+    print(" . ..  . ... .")
+    print(" . ..  . ... .")
+    print(new_book)
+    print(" . ..  . ... .")
+    print(" . ..  . ... .")
     return new_book
 
 
