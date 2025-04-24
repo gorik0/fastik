@@ -1,2 +1,4 @@
-a=10
-print(a is not None)
+from src.config import Settings
+
+
+print(Settings.DATABASE_URL)

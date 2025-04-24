@@ -10,7 +10,7 @@ from src.auth.service import UserService
 from src.db.main import get_session
 from fastapi.exceptions import  HTTPException
 
-from utils import create_token, verify_pass
+from src.auth.utils import create_token, verify_pass
 
 from fastapi.responses import JSONResponse
 auth_router = APIRouter()
@@ -39,17 +39,24 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
     if user:
        pass_hash  = verify_pass(login_data.password, user.password_hash)
        if pass_hash:
+        print(" .. . ... ")
+        print(" .. . ... ")
+        print(user)
+        print(" .. . ... ")
+        print(" .. . ... ")
+        print(" .. . ... ")
+        print(" .. . ... ")
         access_token = create_token(
            user_data={
               'email':user.email,
-              'uid':user.uid,
+              'uid':str(user.uid),
            },
 
         )
         refresh_token = create_token(
            user_data={
               'email':user.email,
-              'uid':user.uid,
+              'uid':str(user.uid),
            },
            refresh= True,
            expiry=timedelta(days=REFRESH_EXPIRY_D)
@@ -58,11 +65,11 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
         return JSONResponse(
            content={
               "message":"Succe login",
-              "refresh_token ":refresh_token,
+              "access ":access_token,
               "refresh_token ":refresh_token,
               "user_data ":{
                  "email":user.email,
-                 "uid":user.uid,
+                 "uid":str(user.uid),
               },
            }
         )

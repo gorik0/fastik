@@ -3,7 +3,7 @@ import logging
 import uuid
 import jwt
 from passlib.context import CryptContext
-from src.config import Settings
+from src.config import Config
 pass_context = CryptContext(
     schemes=['bcrypt']
 )
@@ -16,22 +16,22 @@ def verify_pass(passw:str, hash:str )-> bool:
     return pass_context.verify(passw,hash)
 
 ACCESS_TOKEN_EXPIRY_SECONDS = 3600
-def create_token (user_data : dict , expiry : timedelta, refresh:bool = False):
+def create_token (user_data : dict , expiry : timedelta = None, refresh:bool = False):
     payload = {}
     payload['user'] = user_data
     payload['jti'] = str(uuid.uuid4())
     payload['refresh'] = refresh
-    payload['expire'] = expiry if expiry is not None else timedelta(seconds= ACCESS_TOKEN_EXPIRY_SECONDS)
+    payload['expire'] = str(expiry if expiry is not None else timedelta(seconds= ACCESS_TOKEN_EXPIRY_SECONDS))
     
 
-    token = jwt.encode(payload=payload,key=Settings.JWT_SECRET,algorithm=Settings.JWT_ALGORITHM)
+    token = jwt.encode(payload=payload,key=Config.JWT_SECRET,algorithm=Config.JWT_ALGORITHM)
     return token
 
 
 def decode_token (token:str)->dict:
     try:
 
-        token_data = jwt.decode(jwt=token,key=Settings.JWT_SECRET,algorithms=Settings.JWT_ALGORITHM)
+        token_data = jwt.decode(jwt=token,key=Config.JWT_SECRET,algorithms=Config.JWT_ALGORITHM)
         return token_data 
 
 

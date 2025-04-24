@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from src.auth.models import User
 from src.auth.schemas import UserCreateModel
-from .utils import generate_hash
+from src.auth.utils import generate_hash
 
 
 class UserService :
