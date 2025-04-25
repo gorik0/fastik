@@ -23,6 +23,8 @@ async def get_all_books(
     user_details = Depends(auth_bearer_token)
     
 ):
+    print(">>>>>>")
+    print(user_details)
     books = await books_service.get_all(session)
     print(books)
     return books
@@ -41,14 +43,9 @@ async def read_book(book_id: str,session:AsyncSession = Depends(get_session)):
 
 @book_router.post("/", status_code=201)
 async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session)):
-    print("HEEEEEE")
+
     new_book = await books_service.create_book(book, session)
-    print(" . ..  . ... .")
-    print(" . ..  . ... .")
-    print(" . ..  . ... .")
-    print(new_book)
-    print(" . ..  . ... .")
-    print(" . ..  . ... .")
+  
     return new_book
 
 
@@ -65,9 +62,7 @@ async def update_book(book_id: str, update_data: BookUpdateModel,session:AsyncSe
 @book_router.delete('/{book_id}',status_code=204)
 async def delete_book(book_id: str,session:AsyncSession = Depends(get_session)):
     book = await books_service.delete_book(book_id,session)
-    print("BOOOOOOOO ::::")
-    print("BOOOOOOOO ::::")
-    print("BOOOOOOOO ::::", book)
+    
     if book:
         return book 
     else:
