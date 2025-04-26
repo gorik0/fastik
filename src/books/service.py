@@ -28,9 +28,7 @@ class BookService :
     async def create_book(self,book_data: BookCreateModel ,session:AsyncSession):
 
         book_data_dict = book_data.model_dump()
-        print("\n ... ")
-        print("\n ...  DUMP BOOK -->>> ",book_data_dict)
-        print("\n ... ")
+       
         newBook = Book(**book_data_dict)
         session.add(newBook)
         await session.commit()
@@ -62,11 +60,7 @@ class BookService :
             
             await session.delete(book_to_deleet)
             await session.commit()
-            print("SUCCESSS")
-            print("SUCCESSS")
-            print("SUCCESSS")
-            print("SUCCESSS")
-            print("SUCCESSS")
+ 
             return {"msg":"SUCCESS"}
         else:
             return None

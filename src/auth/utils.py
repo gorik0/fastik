@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
 import uuid
 import jwt
@@ -21,7 +21,7 @@ def create_token (user_data : dict , expiry : timedelta = None, refresh:bool = F
     payload['user'] = user_data
     payload['jti'] = str(uuid.uuid4())
     payload['refresh'] = refresh
-    payload['expire'] = str(expiry if expiry is not None else timedelta(seconds= ACCESS_TOKEN_EXPIRY_SECONDS))
+    payload['expire'] = (datetime.now() + (expiry if expiry else timedelta(seconds=ACCESS_TOKEN_EXPIRY_SECONDS))).timestamp()  # Save as UNIX timestamp
     
 
     token = jwt.encode(payload=payload,key=Config.JWT_SECRET,algorithm=Config.JWT_ALGORITHM)
@@ -37,4 +37,5 @@ def decode_token (token:str)->dict:
 
     except jwt.PyJWTError as e :
         logging.exception(e )
+       
         return  None

@@ -4,7 +4,7 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi import HTTPException
 from src.auth.utils import decode_token
 from fastapi import status
-class AccessTokenBearer (HTTPBearer):
+class TokenBearer (HTTPBearer):
     def __init__(self, auto_error = True):
         super().__init__(auto_error=auto_error)
     
@@ -17,24 +17,34 @@ class AccessTokenBearer (HTTPBearer):
 
         token_data = decode_token(token=token)
 
-
-        if not self.token_valid:
-                raise HTTPException(
-                     status_code=status.HTTP_403_FORBIDDEN,
-                     detail="Token is invalid!! >> "
-                )
         if token_data is None:
-              raise HTTPException(
-                     status_code=status.HTTP_403_FORBIDDEN,
-                     detail="No token data !! >> "
-                )
-        if token_data['refresh']:
+             
+            raise HTTPException(
+                                status_code=status.HTTP_403_FORBIDDEN,
+                                detail="NO data for this token !! >> "
+                            )
+        self.verify_token_data (token_data)
+            
+    
+        return token_data
+    
+    def verify_token_data(token_data):
+          raise NotImplementedError("NOT implemeent verufy token!!!!")
+    
+
+class AccessTokenBearer(TokenBearer):
+
+    def verify_token_data(self,token_data):
+          if token_data and  token_data['refresh']:
                 raise HTTPException(
                      status_code=status.HTTP_403_FORBIDDEN,
                      detail="Please provide aces token !! >> "
                 )
         
-        return token_data
-    def token_valid (self,token:str)->bool:
-          token_data = decode_token(token=token)
-          return True if token_data is not None else False
+class RefreshTokenBearer(TokenBearer):
+     def verify_token_data(self,token_data):
+          if token_data and not  token_data['refresh']:
+                raise HTTPException(
+                     status_code=status.HTTP_403_FORBIDDEN,
+                     detail="Please provide refresh token !! >> "
+                )

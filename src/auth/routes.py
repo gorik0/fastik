@@ -1,7 +1,9 @@
 from datetime import timedelta
+import datetime
 from fastapi import APIRouter,Depends,status
 
 
+from src.auth.dependencies import RefreshTokenBearer
 from src.auth.schemas import User, UserCreateModel, UserLoginModel
 
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -79,3 +81,29 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
            status_code=status.HTTP_404_NOT_FOUND
         )
 
+
+
+refresh_bearer_token = RefreshTokenBearer()
+
+@auth_router.get("/refresh")
+async def get_all_books(
+    token_details:dict  = Depends(refresh_bearer_token)
+    
+):
+   exp = token_details['expire']
+   if not exp:
+      raise HTTPException(
+            detail=" No expire found!!!! ... >>>",
+            status_code=status.HTTP_403_FORBIDDEN
+         )
+   if datetime.datetime.fromtimestamp(int(exp))> datetime.datetime.now():
+      new_token = create_token(user_data=token_details['user'])
+      return JSONResponse(
+         content={
+            "access_token":new_token
+         }
+      )
+   raise HTTPException(
+      detail="Wrong or expired refresh token!!!! ... >>>",
+       status_code=status.HTTP_403_FORBIDDEN
+   )
