@@ -14,6 +14,11 @@ async def add_jti_to_blocklist (jti):
 
 
 
-async def token_in_blocklist (jti)->bool:
-    jti = token_blocklist.get(name=jti)
+async def token_in_blocklist (jti_toget)->bool:
+    jti = await token_blocklist.get(name=jti_toget)
+    print(" . .. . . .")
+    print(" . .. . . .")
+    print(" . .. . . .")
+    print(jti)
+    print(" . .. . . .")
     return jti is not None
