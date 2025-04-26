@@ -42,9 +42,9 @@ async def read_book(book_id: str,session:AsyncSession = Depends(get_session)):
     
 
 @book_router.post("/", status_code=201)
-async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session)):
-
-    new_book = await books_service.create_book(book, session)
+async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session), user_details = Depends(auth_bearer_token)):
+    uid = user_details['user']['uid']
+    new_book = await books_service.create_book(book,uid, session)
   
     return new_book
 

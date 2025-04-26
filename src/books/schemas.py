@@ -2,7 +2,7 @@ import uuid
 from pydantic import BaseModel
 from datetime import date, datetime
 class Book(BaseModel):
-    id: uuid.UUID
+    uid: uuid.UUID
     title: str
     author: str
     publisher: str

@@ -1,7 +1,9 @@
+from typing import List
 from fastapi import Depends, Request
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi import HTTPException
+from starlette.errors import UserForbidden
 from src.auth.models import User
 from src.auth.service import UserService
 from src.auth.utils import decode_token
@@ -25,10 +27,7 @@ class TokenBearer (HTTPBearer):
 
         if token_data is None:
              
-            raise HTTPException(
-                                status_code=status.HTTP_403_FORBIDDEN,
-                                detail="NO data for this token !! >> "
-                            )
+            raise UserForbidden()
         self.verify_token_data (token_data)
         # if await  token_in_blocklist(jti_toget=token_data['jti']):
         #      raise HTTPException(
@@ -74,3 +73,17 @@ async def get_user (token = Depends(AccessTokenBearer()),session  = Depends(get_
           
      else:
           return None
+     
+
+class RoleChecker ():
+    def __init__(self,allowed_roles :List[str]):
+          self.allowed_roles = allowed_roles
+    def __call__(self, user:User = Depends(get_user)):
+         user_role  =user.role
+         if user_role in self.allowed_roles:
+              return True
+         else:
+              raise HTTPException(
+                   status_code=status.HTTP_403_FORBIDDEN,
+                   detail="Not allowed role"
+              )

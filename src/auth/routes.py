@@ -3,7 +3,7 @@ from datetime import timedelta
 from fastapi import APIRouter,Depends,status
 
 
-from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer, get_user
+from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer, RoleChecker, get_user
 from src.auth.schemas import User, UserCreateModel, UserLoginModel
 
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -25,6 +25,7 @@ access_bearer_token = AccessTokenBearer()
 REFRESH_EXPIRY_D =2
 
 auth_service = UserService()
+role_checker  =Depends(RoleChecker(['user']))
 
 @auth_router.post('/signup',response_model=User,status_code=status.HTTP_201_CREATED)
 async def create_user(user_data :UserCreateModel,session:AsyncSession = Depends(get_session)):
@@ -44,6 +45,7 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
     
     user  =await auth_service.get_user_by_email(login_data.email,session)
     if user:
+      
        pass_hash  = verify_pass(login_data.password, user.password_hash)
        if pass_hash:
         
@@ -51,6 +53,7 @@ async def create_user(login_data  :UserLoginModel,session:AsyncSession = Depends
            user_data={
               'email':user.email,
               'uid':str(user.uid),
+              'role':user.role
            },
 
         )
@@ -128,9 +131,10 @@ async def logout(
 
       },status_code=status.HTTP_200_OK
    )
-@auth_router.get("/me")
+@auth_router.get("/me", dependencies=[role_checker])
 async def logout(
-    user:dict  = Depends(get_user)
+    user:dict  = Depends(get_user),
+    
 ):
    if user :
       return user

@@ -25,11 +25,12 @@ class BookService :
 
         
         
-    async def create_book(self,book_data: BookCreateModel ,session:AsyncSession):
+    async def create_book(self,book_data: BookCreateModel ,uid: str ,session:AsyncSession):
 
         book_data_dict = book_data.model_dump()
-       
+
         newBook = Book(**book_data_dict)
+        newBook.user_id = uid
         session.add(newBook)
         await session.commit()
         return newBook

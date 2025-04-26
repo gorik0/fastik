@@ -26,6 +26,7 @@ class UserService :
       new_user.lastName = "a"
       new_user.is_verified = True
       new_user.lastName = "a"
+      new_user.role = "user"
       session.add(new_user)
       await session.commit()
       return new_user
