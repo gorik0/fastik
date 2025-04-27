@@ -3,7 +3,7 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi import HTTPException
-from starlette.errors import UserForbidden
+from src.errors import UserForbidden
 from src.auth.models import User
 from src.auth.service import UserService
 from src.auth.utils import decode_token

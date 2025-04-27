@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from starlette.errors import UserForbidden, create_exc_handler
+from src.errors import UserForbidden, create_exc_handler
 from src.books.routes import book_router
 from contextlib import asynccontextmanager
 from src.auth.routes import auth_router
