@@ -4,6 +4,7 @@ from src.books.routes import book_router
 from contextlib import asynccontextmanager
 from src.auth.routes import auth_router
 from src.db.main import init_db
+from src.middleware import register_middl
 version  = "v1"
 from fastapi import status
 
@@ -21,3 +22,4 @@ initial_det="NO USER!!!!",
 status=status.HTTP_403_FORBIDDEN
 
 ))
+register_middl(app)
