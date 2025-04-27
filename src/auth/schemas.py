@@ -22,3 +22,11 @@ class User(BaseModel):
     is_verified: bool 
     created_at: datetime  
     updated_at: datetime 
+
+class PasswordReqModel(BaseModel):
+    email:str
+
+class PasswordResetConfirmModel(BaseModel):
+    password:str
+    repeat_passw:str
+

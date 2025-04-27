@@ -3,20 +3,23 @@ from datetime import timedelta
 from fastapi import APIRouter,Depends,status
 
 
+from src import mail
 from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer, RoleChecker, get_user
-from src.auth.schemas import User, UserCreateModel, UserLoginModel
+from src.auth.schemas import PasswordReqModel, PasswordResetConfirmModel, User, UserCreateModel, UserLoginModel
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.auth.service import UserService
+from src.config import Config
 from src.db.main import get_session
 from fastapi.exceptions import  HTTPException
 
-from src.auth.utils import create_token, verify_pass
+from src.auth.utils import create_token, create_url_safe_token, decode_url_safe_token, generate_hash, verify_pass
 
 from fastapi.responses import JSONResponse
 
 from src.db.redis import add_jti_to_blocklist
+from src.mail import create_message
 auth_router = APIRouter()
 
 
@@ -144,3 +147,59 @@ async def logout(
           status_code=status.HTTP_404_NOT_FOUND
 
       )
+   
+
+
+   # RESET PASSSWORFD!!!!
+@auth_router.post("/reset")
+async def reset_passw(
+    email_to_reset_for: PasswordReqModel,
+):
+   email= email_to_reset_for.email
+   token = create_url_safe_token(data={"email": email})
+   link = f'http://{Config.DOMAIN}/api/v1/auth/reset_confirm/{token}'
+   html_mess = f"""
+Please verify by clicking this link ::: {link}
+"""
+   msg = create_message(recipients=[email],body=html_mess,subject="RESET PASS")
+   await mail.mail.send_message(message=msg)
+   return {
+      "mesg":"|ok|"
+   }
+
+
+async def reset_account_password(
+    token: str,
+    passwords: PasswordResetConfirmModel,
+    session: AsyncSession = Depends(get_session),
+):
+    new_password = passwords.password
+    confirm_password = passwords.repeat_passw
+
+    if new_password != confirm_password:
+        raise HTTPException(
+            detail="Passwords do not match", status_code=status.HTTP_400_BAD_REQUEST
+        )
+
+    token_data = decode_url_safe_token(token)
+
+    user_email = token_data.get("email")
+
+    if user_email:
+        user = await auth_service.get_user_by_email(user_email, session)
+
+        if not user:
+            raise HTTPException(detail="NO suer was found ", status_code=status.HTTP_404_NOT_FOUND)
+
+        passwd_hash = generate_hash(new_password)
+        await auth_service.update_user(user, {"password_hash": passwd_hash}, session)
+
+        return JSONResponse(
+            content={"message": "Password reset Successfully"},
+            status_code=status.HTTP_200_OK,
+        )
+
+    return JSONResponse(
+        content={"message": "Error occured during password reset."},
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    )

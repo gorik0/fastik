@@ -22,6 +22,7 @@ mail_config = ConnectionConfig(
 
 mail = FastMail(config=mail_config)
 
+mail.send_message( )
 
 def create_message(recipients: list[str], subject: str, body: str):
 
